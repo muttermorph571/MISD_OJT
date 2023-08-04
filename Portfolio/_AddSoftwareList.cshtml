@@ -1,0 +1,86 @@
+﻿@model Intranet.Models.Software_IT_Inventory.MainForm
+@using (Html.BeginForm("ModifyITDetails", "MISD", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    @Html.HiddenFor(m => m.ITDetails.ControlNo);
+    <div class="modal-body " id="ModalBody">
+        <div id="ModalTable">
+            <div class="form-row">
+                <div class="col-md-12">
+                    <table class="table table-striped table-bordered" id="tblAddSoftwareList" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th class="d-none"></th>
+                                <th>Control No.</th>
+                                <th>Description</th>
+                                <th>Product Key</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (var i = 0; i < Model.SoftwareList.Count; i++)
+                            {
+                                <tr>
+                                    <td class="text-nowrap">@Html.CheckBoxFor(m => m.SoftwareList[i].checkbox)@Html.HiddenFor(m => m.SoftwareList[i].checkbox)</td>
+                                    <td class="d-none">@Html.DisplayFor(m => m.SoftwareList[i].Code)@Html.HiddenFor(m => m.SoftwareList[i].Code))</td>
+                                    <td>@Html.DisplayFor(m => m.SoftwareList[i].ControlNo)</td>
+                                    <td>@Html.DisplayFor(m => m.SoftwareList[i].Description)</td>
+                                    <td>@Html.DisplayFor(m => m.SoftwareList[i].ProductKey)</td>
+                                    <td>@Html.DisplayFor(m => m.SoftwareList[i].Remarks)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" name="LinkBtnName" value="LinkSoftware" class="btn btn-primary" id="btn_AddSoftwareList">Update</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+}
+
+<script>
+    var btnAddSoftwareList = $('#btn_AddSoftwareList');
+
+    $(document).ready(function () {
+        var table = $('#tblAddSoftwareList').DataTable({
+            order: [],
+            searching: true,
+            paging: false,
+            scrollY: "300px",
+            scrollX: true,
+            scrollCollapse: true,
+            bInfo: false,
+            dom: '<"float-left"f><"ITLogsToolbar">rt<"bottom"lp>',
+            search: {
+                "addClass": 'form-control input-lg col-xs-12'
+            },
+            language: {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search Software"
+            },
+            columnDefs: [
+                { "targets": [4], "searchable": false },
+                { "targets": [0], "searchable": false, "width": "5px", "orderable": false },
+            ],
+        });
+        table.columns.adjust();
+        $('#tblAddSoftwareList tbody').on('click', 'input[type="checkbox"]', function () {
+            if ($(this).prop('checked')) {
+                $(this).attr('value', true);
+            }
+            else {
+                $(this).attr('value', false);
+            }
+            //console.log($(this).attr('value'));
+        });
+    });
+
+    btnAddSoftwareList.click(function () {
+        var bln = confirm("Update software?");
+        return bln;
+    });
+</script>

@@ -1,0 +1,967 @@
+﻿@model Intranet.Models.Software_IT_Inventory.MainForm
+@{
+    ViewBag.Title = "IT Inventory";
+}
+@if (TempData["Message"] != null)
+{
+    <script type="text/javascript">
+             alert('@TempData["Message"]');
+    </script>
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <style>
+    </style>
+</head>
+<body>
+    <div>
+        <h4 class="modal-header justify-content-center p-0 pb-1 mb-1 m-0 text-state-orange-stroke">IT Inventory</h4>
+    </div>
+    @using (Html.BeginForm("ModifyITDetails", "MISD", FormMethod.Post, new { enctype = "multipart/form-data", @class = "was-validated ", novalidate = "novalidate", id = "ITInventory" }))
+    {
+        @Html.AntiForgeryToken();
+        //Fields Main Page
+    <div class="form-row">
+        <div class="form-group m-md-0 col-md-2 ">
+            <label class="text-danger form-label" for="ControlNo">Control No.</label>
+            <div class="input-group w-100">
+                @Html.TextBoxFor(m => m.ITDetails.ControlNo, new { @class = "form-control form-control-sm", required = "required", @style = "text-align: center", id = "ControlNo", @readonly = "readonly" })
+                <button id="btn_ControlNoMasterlist" type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#mdl_ControlNoMasterlist">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <div class="invalid-feedback text-center">
+                Please enter Control No.
+            </div>
+            <div class="valid-feedback text-center">
+                CE-000-0000 <br />FORMAT
+            </div>
+        </div>
+        <div class="form-group m-md-0 col-md-1">
+            <div class="form-check flex-column form-check-inline pt-1">
+                <label class="form-check-label" for="IsLaptop">Is Laptop</label>
+                <div>
+                    @Html.CheckBoxFor(m => m.ITDetails.IsLaptop, new { @class = "form-check-input", @style = "text - align: center;", id = "IsLaptop", @disabled = "disabled" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group p-md-0 col-md-1">
+            <div class="form-check flex-column form-check-inline pt-1">
+                <label class="form-check-label" for="IfStaticIP">If Static IP</label>
+                <div>
+                    @Html.CheckBoxFor(m => m.ITDetails.IfStaticIP, new { @class = "form-check-input", @style = "text - align: center;", id = "IfStaticIP", @disabled = "disabled" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-1">
+            <div class="form-check flex-column form-check-inline pt-1">
+                <label class="form-check-label" for="WithSpiceworks">W/Spiceworks</label>
+                <div>
+                    @Html.CheckBoxFor(m => m.ITDetails.WithSpiceworks, new { @class = "form-check-input", @style = "text - align: center;", id = "WithSpiceworks", @disabled = "disabled" })
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-md-3">
+            <label class="text-danger" for="PCUser">User</label>
+            @Html.TextBoxFor(m => m.ITDetails.PCUser, new { @class = "form-control form-control-sm", required = "required", @style = "text-align: center", id = "PCUser", @readonly = "readonly" })
+            <div class="invalid-feedback" for="PCUser">
+                Please enter your PCUser.
+            </div>
+        </div>
+        <div class="form-group col-md-2">
+            <label class="text-danger" for="Hostname">PCName</label>
+            @Html.TextBoxFor(m => m.ITDetails.Hostname, new { @class = "form-control form-control-sm", required = "required", @style = "text-align: center", id = "Hostname", @readonly = "readonly" })
+            <div class="invalid-feedback">
+                Please enter your Hostname.
+            </div>
+        </div>
+        <div class="form-group col-md-2" for="CPU">
+            <label>CPU</label>
+            @Html.TextBoxFor(m => m.ITDetails.CPU, new { @class = "form-control form-control-sm", required = "required", @style = "text-align: center", id = "CPU", @readonly = "readonly" })
+        </div>
+    </div>
+        <div class="form-row">
+            <div class="form-group col-md-1" for="Ram_Size">
+                <label>RAM Size (GB)</label>
+                @Html.TextBoxFor(m => m.ITDetails.Ram_Size, new { @class = "form-control form-control-sm", required = "required", @type = "number", @style = "text-align: center", id = "Ram_Size", @readonly = "readonly" })
+            </div>
+            <div class="form-group col-md-3" for="Ram_Description">
+                <label>Ram Desc</label>
+                @Html.TextBoxFor(m => m.ITDetails.Ram_Description, new { @class = "form-control form-control-sm", required = "required", @style = "text-align: center", id = "Ram_Description", @readonly = "readonly" })
+            </div>
+            <div class="form-group col-md-1">
+                <label>Strg. Size (GB)</label>
+                @Html.TextBoxFor(m => m.ITDetails.Storage_Size, new { @class = "form-control form-control-sm", required = "required", @type = "number", @style = "text-align: center", id = "Storage_Size", @readonly = "readonly" })
+            </div>
+            <div class="form-group col-md-3">
+                <label>Storage Desc</label>
+                @Html.TextBoxFor(m => m.ITDetails.Storage_Description, new { @class = "form-control form-control-sm", required = "required", @style = "text-align: center", id = "Storage_Description", @readonly = "readonly" })
+            </div>
+            <div class="form-group col-md-2">
+                <label>Price</label>
+                @Html.TextBoxFor(m => m.ITDetails.AcquisitionCost, new { @class = "form-control form-control-sm text-right", required = "required", @style = "text-align: center", id = "Acquisition_Cost", @readonly = "readonly" })
+            </div>
+            <div class="form-group col-md-2">
+                <label>IP Address</label>
+                @Html.TextBoxFor(m => m.ITDetails.IPAddress, new { @class = "form-control form-control-sm form-input", required = "required", @style = "text - align: center;", @placeholder = "xxx.xxx.xxx.xxx", id = "IPAddress", @readonly = "readonly" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-2 ">
+                <label>LANMAC Address</label>
+                @Html.TextBoxFor(m => m.ITDetails.LANMAC, new { @class = "form-control form-control-sm", required = "required", @style = "text - align: center;", id = "LANMAC", @readonly = "readonly" })
+            </div>
+            <div class="form-group col-md-2 ">
+                <label>WLANMAC Address</label>
+                @Html.TextBoxFor(m => m.ITDetails.WLANMAC, new { @class = "form-control form-control-sm", required = "required", @style = "text - align: center;", id = "WLANMAC", @readonly = "readonly" })
+            </div>
+        </div>
+        @* Modal outside main page *@
+        <div class="form-row pt-1" id="tableButtonBar">
+            @*Software List Table*@
+            <div class="col-md-4 form-group">
+                <label for="tbl_SoftwareMasterlist" class="text-dark mb-0 font-weight-bold col-md-4">Link Software</label>
+                <table class="table table-striped table-bordered w-100" id="tbl_SoftwareMasterlist">
+                    <thead>
+                        <tr>
+                            <th class="d-none">Code</th>
+                            <th>Control No.</th>
+                            <th>Description</th>
+                            <th>Product Key</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.SoftwareList.Count; i++)
+                        {
+                            <tr>
+                                <td class="d-none">@Html.DisplayFor(m => m.SoftwareList[i].Code)</td>
+                                <td>@Html.DisplayFor(m => m.SoftwareList[i].ControlNo)</td>
+                                <td>@Html.DisplayFor(m => m.SoftwareList[i].Description)</td>
+                                <td>@Html.DisplayFor(m => m.SoftwareList[i].ProductKey)</td>
+                                <td>@Html.DisplayFor(m => m.SoftwareList[i].Remarks)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @*Peripherals Table*@
+            <div class="col-md-4 form-group">
+                <label for="tbl_PeripheralsList" class="text-dark mb-0 font-weight-bold col-md-4">Peripherals</label>
+                <table class="table table-striped table-bordered w-100" id="tbl_PeripheralsList">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Control No.</th>
+                            <th>Description</th>
+                            <th>Remarks</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.PeripheralsList.Count; i++)
+                        {
+                            <tr>
+                                <td class="text-center">@Html.CheckBoxFor(m => m.PeripheralsList[i].checkbox)@Html.HiddenFor(m => m.PeripheralsList[i].checkbox)</td>
+                                <td>@Html.DisplayFor(m => m.PeripheralsList[i].ControlNo)@Html.HiddenFor(m => m.PeripheralsList[i].ControlNo)</td>
+                                <td>@Html.DisplayFor(m => m.PeripheralsList[i].Description)@Html.HiddenFor(m => m.PeripheralsList[i].Description)</td>
+                                <td>@Html.DisplayFor(m => m.PeripheralsList[i].Remarks)@Html.HiddenFor(m => m.PeripheralsList[i].Remarks)</td>
+                                <td>@Html.DisplayFor(m => m.PeripheralsList[i].Location)@Html.HiddenFor(m => m.PeripheralsList[i].Location)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            @*Logs Table*@
+            <div class="col-md-4 form-group">
+                <label for="tbl_ITLogsMasterlist" class="text-dark mb-0 font-weight-bold col-md-4">IT Logs</label>
+                <table class="table table-striped table-bordered w-100" id="tbl_ITLogsMasterlist">
+                    <thead>
+                        <tr>
+                            <th id="logsCheckbox"></th>
+                            <th class="d-none">Index</th>
+                            <th class="d-none">Control No.</th>
+                            <th>Date</th>
+                            <th>Done By</th>
+                            <th>Description</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Model.ITLogsList.Count; i++)
+                        {
+                            <tr>
+                                <td class="text-center">@Html.CheckBoxFor(m => m.ITLogsList[i].logsCheckbox)@Html.HiddenFor(m => m.ITLogsList[i].logsCheckbox)</td>
+                                <td class="d-none">@Html.DisplayFor(m => m.ITLogsList[i].Ndx)@Html.HiddenFor(m => m.ITLogsList[i].Ndx))</td>
+                                <td class="d-none">@Html.DisplayFor(m => m.ITLogsList[i].ControlNo)@Html.HiddenFor(m => m.ITLogsList[i].ControlNo)</td>
+                                <td>@Html.DisplayFor(m => m.ITLogsList[i].Date)</td>
+                                <td>@Html.DisplayFor(m => m.ITLogsList[i].DoneBy)</td>
+                                <td>@Html.DisplayFor(m => m.ITLogsList[i].Description)</td>
+                                <td>@Html.DisplayFor(m => m.ITLogsList[i].Remarks)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        @*IT Logs Modal*@
+        <div class="modal fade" id="LogsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">IT Logs</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="ModalBody">
+                        <div class="form-row justify-content-center">
+                            <div class="form-group col-md-8">
+                                <label for="DateITLogs" class="text-dark">Date</label>
+                                @Html.TextBoxFor(m => m.ITLogsDetails.Date, "{0:yyyy-MM-dd}", new { @class = "form-control", id = "DateITLogs", required = "required", type = "date" })
+                            </div>
+                            <div class="form-group col-md-8">
+                                <label class="text-danger form-label" for="DoneBy">Done By</label>
+                                @Html.TextBoxFor(m => m.ITLogsDetails.DoneBy, new { @class = "form-control form-control-sm", required = "required", id = "DoneByITLogs", })
+                            </div>
+                        </div>
+                        <div class="form-row border-0 border-primary">
+
+                            <div class="form-group col-md-3 d-none">
+                                <label class="text-danger form-label" for="ControlNo">Control No.</label>
+                                @Html.TextBoxFor(m => m.ITLogsDetails.ControlNo, new { @class = "form-control form-control-sm", @style = "text-align: center", required = "required", id = "ControlNoITLogs", })
+                                <div class="invalid-feedback">
+                                    Please enter Control No.
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 ">
+                                    <label class="text-danger form-label" for="Description">Description</label>
+                                    @Html.TextAreaFor(m => m.ITLogsDetails.Description, new { @class = "form-control form-control-sm", @cols = "100", @rows = "5", required = "required", id = "DescriptionITLogs" })
+                                </div>
+                                <div class="form-group col-md-12 ">
+                                    <label class="form-label" for="Remarks">Remarks</label>
+                                    @Html.TextAreaFor(m => m.ITLogsDetails.Remarks, new { @class = "form-control form-control-sm", @cols = "50", @rows = "3", id = "RemarksITLogs" })
+                                </div>
+                            </div>
+                        </div>
+                        @*buttons inside the modal*@
+                        <div class="form-row modal-footer">
+                            <div class="form-group">
+                                <button id="btn_LogsSave" type="submit" name="ITLogsBtnName" value="SaveLogs" class="btn btn-group btn-success">Save</button>
+                                <button id="btn_LogsDelete" type="submit" name="ITLogsBtnName" value="DeleteLogs" class="btn btn-group btn-danger col-md-2 justify-content-center">
+                                    <i aria-hidden="true" class="fa fa-trash">
+
+                                    </i>
+                                </button>
+                                <button id="btn_LogsCancel" type="button" class="btn btn-group btn-danger" data-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Lookup ControlNo Modal*@
+        <div class="modal fade" id="mdl_ControlNoLookup" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">ControlNO Lookup</h5>
+                    </div>
+                    <div id="ModalBody">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" name="btn_AddControlNo" value="AddControlNo" class="btn btn-primary" id="btn_AddControlNo">Add</button>
+                        <button type="button" id="btn_CloseControlNoLookup" class="btn btn-secondary" @*onClick="window.location.reload()"*@>Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Control No Masterlist Modal*@
+        <div class="modal fade" id="mdl_ControlNoMasterlist" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">ControlNo Masterlist</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="ModalBody" class="modal-body">
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btn_CloseControlNo" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*SoftwareList Modal*@
+        <div class="modal fade" id="mdl_AddSoftwareList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-lg"
+                 role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Software List</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="ModalBody">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*Peripherals Modal*@
+        <div class="modal fade" id="mdl_PeripheralsList" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-lg"
+                 role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Peripherals</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <label for="cmb_SubCategory" class="text-danger mb-0 font-weight-bold col-md-4">Sub Category</label>
+                    <div class="form-row form-group col-md-4">
+                        @Html.DropDownListFor(m => m.SubCategories, Model.SubCategories, "-- Select Category --", new { @class = "form-control form-control-sm", id = "cmb_SubCategory" })
+                    </div>
+
+                    <div id="ModalBody">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        //Buttons
+        <div class="col-12 p-1 w-100 form-row modal-footer">
+            <div class="form-group form-inline col-md-auto ">
+                <div class="form-group col-sm-auto ">
+                    <button id="btn_Add" type="button" class="btn btn-group btn-success mr-2" data-toggle="modal" data-target="#mdl_ControlNoLookup">Add</button>
+                    <button id="btn_Edit" type="button" class="btn btn-group btn-warning mr-2">Edit</button>
+                    <button id="btn_Save" type="submit" name="ITBtnName" value="Save" class="btn btn-group btn-success mr-2 d-none">Save</button>
+                    <button id="btn_Update" type="submit" name="ITBtnName" value="Update" class="btn btn-group btn-primary mr-2 d-none">Update</button>
+                    <button id="btn_Delete" type="submit" name="ITBtnName" value="Delete" class="btn btn-group btn-danger mr-2 d">Delete</button>
+                    <button id="btn_Cancel" type="button" class="btn btn-group btn-danger mr-2 d-none">Cancel</button>
+                    <button id="btn_Clear" type="button" class="btn btn-default mr-2 btn-info">Clear</button>
+                    <button id="btn_SelectITLogs" type="button" class="btn btn-primary mr-2  @(!string.IsNullOrWhiteSpace(Model.ITDetails.ControlNo) ? "" : "d-none")" data-toggle="modal" data-target="#LogsModal">Add Logs </button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdl_AddSoftwareList" id="btn_LinkSoftware" name="AddSoftwareBtnName">Link Software </button>
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#mdl_PeripheralsList" id="btn_PeripheralsList" name="AddPeripheralsBtnName">Add Peripherals </button>
+                    <button id="btn_PeripheralsDelete" type="submit" name="PeripheralsBtnName" value="DeletePeripherals" class="ml-2 btn btn-group btn-danger col-md-2 justify-content-center">
+                        <i aria-hidden="true" class="fa fa-trash"></i>
+                    </button>
+                    <a href="@Url.Action("ITInventoryMasterlist", "MISD")" class="btn btn-group btn-secondary mr-2" id="btn_BackToMasterlist" name="ITBtnName" value ="BackToMasterlist">Back to Masterlist</a>
+                </div>
+            </div>
+        </div>
+    }
+    <script type='text/javascript' src='http://code.jquery.com/jquery-1.11.0.js'></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src="https://rawgit.com/RobinHerbots/jquery.inputmask/3.x/dist/jquery.inputmask.bundle.js"></script>
+    <script>
+        //Initialization of Table
+        $(document).ready(function () {
+            var tableMasterlist = $('#tbl_ITMasterlist').DataTable({
+                order: [],
+                paging: false,
+                scrollY: "327px",
+                scrollX: true,
+                scrollCollapse: true,
+                bInfo: false,
+                select: 'single',
+                dom: '<"float-left"f><"ITToolbar">rt<"bottom"lp>',
+                search: {
+                    "addClass": 'form-control input-lg col-xs-12'
+                },
+                language: {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search IT Inventory"
+                },
+            });
+            var SoftwareTable = $('#tbl_SoftwareMasterlist').DataTable({
+                order: [],
+                paging: false,
+                scrollY: "270px",
+                scrollX: true,
+                scrollCollapse: true,
+                bInfo: false,
+                select: 'single',
+                dom: '<"float-left"f><"SoftwareToolbar">rt<"bottom"lp>',
+                search: {
+                    "addClass": 'form-control input-lg col-xs-12'
+                },
+                language: {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search Software Inventory"
+                },
+            });
+            $('div.SoftwareToolbar').append(btnLinkSoftware);
+            var ITLogsTable = $('#tbl_ITLogsMasterlist').DataTable({
+                order: [],
+                paging: false,
+                scrollY: "251px",
+                scrollX: true,
+                scrollCollapse: true,
+                bInfo: false,
+                select: 'single',
+                dom: '<"float-left"f><"ITLogsToolbar">rt<"bottom"lp>',
+                search: {
+                    "addClass": 'form-control input-lg col-xs-12'
+                },
+                language: {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search IT Logs"
+                },
+            });
+            $('div.ITLogsToolbar').append(btnSelectITLogs, btnLogsDelete);
+            var PeripheralsList = $('#tbl_PeripheralsList').DataTable({
+                order: [],
+                paging: false,
+                scrollY: "327px",
+                scrollX: true,
+                scrollCollapse: true,
+                bInfo: false,
+                select: 'single',
+                dom: '<"float-left"f><"PeripheralsToolbar">rt<"bottom"lp>',
+                search: {
+                    "addClass": 'form-control input-lg col-xs-12'
+                },
+                language: {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search Peripherals"
+                },
+            });
+            $('div.PeripheralsToolbar').append(btnPeripheralsList, btnPeripheralsDelete);
+        });
+        $('#tbl_ITLogsMasterlist tbody').on('click', 'input[type="checkbox"]', function () {
+            if ($(this).prop('checked')) {
+                $(this).attr('value', true);
+            }
+            else {
+                $(this).attr('value', false);
+            }
+        });
+        //Initialization of Buttons
+        var txtLANMAC = $('#LANMAC');
+        var txtPCUser = $('#PCUser');
+        var txtHostname = $('#Hostname');
+        var txtControlNo = $('#ControlNo');
+        var txtCPU = $('#CPU');
+        var chkboxIsLaptop = $('#IsLaptop');
+        var txtRam_Description = $('#Ram_Description');
+        var txtRam_Size = $('#Ram_Size');
+        var txtStorage_Description = $('#Storage_Description');
+        var txtStorage_Size = $('#Storage_Size')
+        var chkboxIfStaticIP = $('#IfStaticIP');
+        var txtIPAddress = $('#IPAddress');
+        var txtAcquisitionCost = $('#Acquisition_Cost');
+        var txtWLANMAC = $('#WLANMAC');
+        var chkboxWithSpiceworks = $('#WithSpiceworks');
+        var btnAdd = $('#btn_Add');
+        var btnEdit = $('#btn_Edit');
+        var btnCancel = $('#btn_Cancel');
+        var btnSave = $('#btn_Save');
+        var btnDelete = $('#btn_Delete');
+        var btnClear = $('#btn_Clear');
+        var btnUpdate = $('#btn_Update');
+        var btnSelectIT = $('#btn_SelectIT');
+        var btnSelectITLogs = $('#btn_SelectITLogs');
+        var btnConfirmation = $('#btn_Confirmation');
+        var form = $("#ITInventory");
+        var btnBar = $('#btn_Bar');
+        var btnLogs = $('#btn_Logs');
+        var btnAddControlNo = $('#btn_AddControlNo');
+        var btnCloseControlNoLookup = $('#btn_CloseControlNoLookup');
+        //Buttons for Modal for ITLOGS
+        var btnLogsSave = $('#btn_LogsSave');
+        var btnLogsDelete = $('#btn_LogsDelete');
+        var txtControlNoITLogs = $('#ControlNoITLogs');
+        var txtDateITLogs = $('#DateITLogs');
+        var txtDoneByITLogs = $('#DoneByITLogs');
+        var txtDescriptionITLogs = $('#DescriptionITLogs');
+        var txtRemarksITLogs = $('#RemarksITLogs');
+        var tbl_ITLogsMasterlist = $('#tbl_ITLogsMasterlist');
+        var dateLogs = $('#DateITLogs');
+        var tbl_SoftwareMasterlist = $('#tbl_SoftwareMasterlist');
+        var tbl_ControlNoMasterlist = $('#tbl_ControlNoMasterlist');
+        var logsChkbox = $('#logsCheckbox');
+        var btnControlNoMasterlist = $('#btn_ControlNoMasterlist');
+        //Buttons for Software Modal
+        var btnLinkSoftware = $('#btn_LinkSoftware');
+        var formMode;
+        var mode;
+        //Button for ControlNoMasterlist
+        var btnsearchControlNo = $('#searchControlNo');
+        btnClear.addClass("d-none");
+        var btnBackToMasterlist = $('#btn_BackToMasterlist');
+        //Button for Peripherals
+        var btnPeripheralsList = $('#btn_PeripheralsList');
+        var cmbSubCategory = $('#cmb_SubCategory');
+        var btnPeripheralsDelete = $('#btn_PeripheralsDelete');
+        var tbl_PeripheralsList = $('#tbl_PeripheralsList')
+
+        //Selection of row transfer for highlight purposes
+        $('#tbl_ITMasterlist tbody').on('click', 'tr', function () {
+            $('#tbl_ITMasterlist tbody tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+        var urlParams = new URLSearchParams(window.location.search);
+        var mode = urlParams.get('mode');
+        console.log(mode);
+        if (mode === "add") {
+            btnAddFunction();
+        }
+        var IPAddress = $('#IPAddress');
+        IPAddress.inputmask({
+            alias: "ip",
+            greedy: false
+        });
+        //Logs modal opener
+        btnSelectITLogs.click(function () {
+            $('#mdl_ITLogs #ModalBody').empty();
+            $('#mdl_ITLogs #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+            var ITLogs = '@Html.Raw(@Url.Action("LoadITLogsMasterlist", "MISD", new { itLoadCode = "tmpITLoadCode" }))';
+            $('#mdl_ITLogs #ModalBody').load(ITLogs.replace('tmpITLogsCode', "1")
+                , function (response, status, xhr) {
+                    if (xhr.status == 403) {
+                        var response = $.parseJSON(xhr.responseText);
+                        window.location = response.LogOnUrl;
+                    }
+                });
+            $('#mdl_ITLogs').modal('show');
+        });
+        btnLinkSoftware.click(function (e) {
+            if (txtControlNo.val() == "") {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('Select one from the masterlist first')
+                return false;
+            }
+            else {
+                $('#mdl_AddSoftwareList #ModalBody').empty();
+                $('#mdl_AddSoftwareList #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+                var url = '@Html.Raw(@Url.Action("LoadAddSoftwareList", "MISD", new { PCControlNo = "tmpPCControlNo" }))';
+                $('#mdl_AddSoftwareList #ModalBody').load(url.replace('tmpPCControlNo', txtControlNo.val())
+                    , function (response, status, xhr) {
+                        if (xhr.status == 403) {
+                            var response = $.parseJSON(xhr.responseText);
+                            window.location = response.LogOnUrl;
+                        }
+                        $('#mdl_AddSoftwareList').modal('show');
+
+                    });
+            }
+        });
+        //When clicking anything in cmbbox, modal will refresh
+        cmbSubCategory.change(function () {
+            $('#mdl_PeripheralsList #ModalBody').empty();
+            $('#mdl_PeripheralsList #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+            var url = '@Html.Raw(@Url.Action("LoadPeripheralsList", "MISD", new { subCategoryID = "tmpSubCategoryID", PCControlNo = "tmpPCControlNo" }))';
+            $('#mdl_PeripheralsList #ModalBody').load(url.replace('tmpSubCategoryID', cmbSubCategory.val()).replace('tmpPCControlNo', txtControlNo.val())
+                    , function (response, status, xhr) {
+                        if (xhr.status == 403) {
+                            var response = $.parseJSON(xhr.responseText);
+                            window.location = response.LogOnUrl;
+                        }
+                        $('#mdl_PeripheralsList').modal('show');
+
+                    });
+        });
+        //For Periphals Modal
+        btnPeripheralsList.click(function () {
+            if (txtControlNo.val() == "") {
+                alert('Select one from the masterlist first')
+                return false;
+            }
+            else {
+                $('#mdl_PeripheralsList #ModalBody').empty();
+                $('#mdl_PeripheralsList #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+                var url = '@Html.Raw(@Url.Action("LoadPeripheralsList", "MISD", new { PCControlNo = "tmpPCControlNo" }))';
+                $('#mdl_PeripheralsList #ModalBody').load(url.replace('tmpPCControlNo', txtControlNo.val())
+                    , function (response, status, xhr) {
+                        if (xhr.status == 403) {
+                            var response = $.parseJSON(xhr.responseText);
+                            window.location = response.LogOnUrl;
+                        }
+                        $('#mdl_PeripheralsList').modal('show');
+
+                    });
+            }
+        });
+        //For Modal ITLOGS
+        btnLogsDelete.click(function () {
+            var ITLogsTable = $('#tbl_ITLogsMasterlist').DataTable
+            var isChecked = $('#tbl_ITLogsMasterlist tbody input[type="checkbox"]:checked').length > 0;
+            if (!isChecked) {
+                alert("Please select from the Logs masterlist.");
+                return false;
+            }
+            else {
+                var bln = confirm("Are you sure you want to Delete Log(s)?");
+                return bln;
+            }
+        });
+        //Peripherals Delete
+        btnPeripheralsDelete.click(function () {
+            var PeripheralsTable = $('#tbl_PeripheralsList').DataTable();
+            var isChecked = $('#tbl_PeripheralsList tbody input[type="checkbox"]:checked').length > 0;
+            if (!isChecked) {
+                alert("Please select from the masterlist.");
+                return false;
+            }
+            else {
+                var bln = confirm("Are you sure you want to Delete Peripheral(s)?");
+                return bln;
+            }
+        });
+        //Missing field Save catcher
+        btnLogsSave.click(function (e) {
+            if (!logsValidator()) {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('You are missing some field(s) or the fields are empty')
+            }
+            else {
+                var bln = confirm("Are you sure you want to Save Log?");
+                return bln;
+            }
+
+        });
+        //For Mainpage
+        //Empty delete catcher
+        btnDelete.click(function () {
+            if (txtControlNo.val() == '' || txtControlNo.val() == null) {
+                alert("Select one from the masterlist to delete.")
+                btnSelectIT.focus();
+                return false;
+            }
+            var bln = confirm("Are you sure you want to Delete?");
+            return bln;
+        });
+        //Missing field Save catcher
+        btnSave.click(function (e) {
+            if (!saveValidator()) {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('You are missing some field(s) or the fields are empty')
+            }
+            else {
+                var bln = confirm("Are you sure you want to Save?");
+                return bln;
+                var url = '@Html.Raw(Url.Action("LoadITInventory", "MISD", new { itLoadCode = "tmpCode"}))';
+                location.href = url.replace('tmpCode', txtControlNo.val());
+            }
+        });
+        //Missing field Update catcher
+        btnUpdate.click(function (e) {
+            if (!saveValidator()) {
+                e.preventDefault();
+                e.stopPropagation();
+                alert('You are missing some field(s) or the fields are empty')
+            }
+            else {
+                var bln = confirm("Are you sure you want to Save?");
+                return bln;
+            }
+        });
+        btnAddControlNo.click(function () {
+            var table = $('#tbl_ControlNoLookup').DataTable();
+            var selectedRow = table.row('.selected').node();
+
+            if (!selectedRow) {
+                alert("Please select one from the masterlist");
+                btnSelectIT.focus();
+                return;
+            }
+            //to get value of checkbox of laptop
+            var isChecked = $(selectedRow).find('td:eq(1) input[type="checkbox"]').prop("checked");
+            chkboxIsLaptop.prop('checked', isChecked);
+            var rowData = table.row('.selected').data();
+            var controlNo = rowData[0];
+            var price = rowData[5];
+            txtControlNo.val(controlNo);
+            txtAcquisitionCost.val(price);
+            $('#mdl_ControlNoLookup').modal('hide');
+            var bln = confirm("Are you sure you selected the correct Control No?");
+            return bln;
+        });
+        //For ControlNoMasterlist Modal
+        btnControlNoMasterlist.click(function () {
+            $('#mdl_ControlNoMasterlist #ModalBody').empty();
+            $('#mdl_ControlNoMasterlist #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+            var ITLogs = '@Html.Raw(@Url.Action("LoadControlNoMasterlist", "MISD", new { CNMasterlist = "tmpControlNoMasterlistLoadCode" }))';
+            $('#mdl_ControlNoMasterlist #ModalBody').load(ITLogs.replace('tmpControlNoMasterlistLoadCode', "1")
+                , function (response, status, xhr) {
+                    if (xhr.status == 403) {
+                        var response = $.parseJSON(xhr.responseText);
+                        window.location = response.LogOnUrl;
+                    }
+                });
+            $('#mdl_ControlNoMasterlist').modal('show');
+            var searchInput = $('div.dataTables_filter input');
+            searchInput.toggle();
+        });
+        //For ITLogs Modal
+        //For Main page
+        btnAdd.click(function () {
+            formMode = 'new';
+            btnAddFunction();
+        });
+        btnCancel.click(function () {
+            if (formMode == 'edit') {
+                var url = '@Html.Raw(Url.Action("LoadITInventory", "MISD", new { itLoadCode = "tmpCode"}))';
+                location.href = url.replace('tmpCode', txtControlNo.val());
+            }
+            else if (formMode == 'new')
+            {
+                EnableFields(false);
+                ClearFields();
+                txtControlNo.attr("readonly", true);
+                btnCancel.addClass("d-none");
+                btnSave.addClass("d-none");
+                btnDelete.removeClass("d-none");
+                btnAdd.removeClass("d-none");
+                btnEdit.removeClass("d-none");
+                btnUpdate.addClass("d-none");
+                btnClear.addClass("d-none");
+                btnLogsDelete.removeClass("d-none");
+                btnLinkSoftware.removeClass("d-none");
+                btnLogs.removeClass("d-none");
+                btnSelectIT.removeClass("d-none");
+                btnSelectITLogs.addClass("d-none");
+                btnPeripheralsDelete.removeClass("d-none");
+                btnPeripheralsList.removeClass("d-none");
+                btnControlNoMasterlist.removeClass("d-none");
+                btnBackToMasterlist.removeClass("d-none");
+                logsChkbox.addClass("d-none");
+                var searchInput = $('div.dataTables_filter input');
+                searchInput.toggle();
+            }
+        });
+        btnCloseControlNoLookup.click(function () {
+            var SoftwareTable = $('#tbl_SoftwareMasterlist').DataTable();
+            var PeripheralsList = $('#tbl_PeripheralsList').DataTable();
+            var ITLogsTable = $('#tbl_ITLogsMasterlist').DataTable();
+
+            SoftwareTable.clear().draw();
+            PeripheralsList.clear().draw();
+            ITLogsTable.clear().draw();
+                EnableFields(false);
+                btnCancel.addClass("d-none");
+                btnSave.addClass("d-none");
+                btnDelete.removeClass("d-none");
+                btnAdd.removeClass("d-none");
+                btnEdit.removeClass("d-none");
+                btnUpdate.addClass("d-none");
+                btnClear.addClass("d-none");
+                btnLogsDelete.removeClass("d-none");
+                btnLinkSoftware.removeClass("d-none");
+                btnLogs.removeClass("d-none");
+                btnSelectIT.removeClass("d-none");
+                btnSelectITLogs.addClass("d-none");
+                btnPeripheralsDelete.addClass("d-none");
+                btnPeripheralsList.addClass("d-none");
+                btnControlNoMasterlist.removeClass("d-none");
+                btnBackToMasterlist.removeClass("d-none");
+                btnPeripheralsList.removeClass("d-none");
+                btnPeripheralsDelete.removeClass("d-none");
+                btnSelectITLogs.removeClass("d-none");              
+                $('#mdl_ControlNoLookup').modal('hide');
+                var searchInput = $('div.dataTables_filter input');
+                searchInput.toggle();
+        });
+        btnEdit.click(function () {
+            formMode = 'edit';
+            btnSelectITLogs.addClass("d-none");
+            if (txtControlNo.val() == '' || txtControlNo.val() == null) {
+                alert("Select one from the masterlist.")
+                btnSelectIT.focus()
+            }
+            else {
+                EnableFields(true);
+                //transferDataToFields();
+                btnAdd.addClass("d-none");
+                btnEdit.addClass("d-none");
+                btnDelete.addClass("d-none");
+                btnUpdate.removeClass("d-none");
+                btnCancel.removeClass("d-none");
+                btnClear.removeClass("d-none");
+                btnSelectIT.addClass("d-none");
+                btnLogsDelete.addClass("d-none");
+                btnLinkSoftware.addClass("d-none");
+                btnPeripheralsDelete.addClass("d-none");
+                btnPeripheralsList.addClass("d-none");
+                btnBackToMasterlist.addClass("d-none");
+                $('#btn_ControlNoMasterlist').addClass("d-none");
+                var searchInput = $('div.dataTables_filter input');
+                searchInput.toggle();
+                var dt = $('#tbl_ITLogsMasterlist').DataTable();
+                dt.column(0).visible(false);
+                var pt = $('#tbl_PeripheralsList').DataTable();
+                pt.column(0).visible(false);
+            }
+        });
+        btnClear.click(function () {
+                ClearFields();
+        });
+        function ClearFields() {
+            if (formMode == 'edit') {
+                txtCPU.val('');
+                txtRam_Description.val('');
+                txtRam_Size.val('');
+                txtStorage_Description.val('');
+                txtStorage_Size.val('');
+                txtIPAddress.val('');
+                txtLANMAC.val('');
+                txtWLANMAC.val('');
+                txtPCUser.val('');
+                txtHostname.val('');
+                txtAcquisitionCost.val('');
+                chkboxWithSpiceworks.prop("checked", false);
+                chkboxIsLaptop.prop("checked", false);
+                chkboxIfStaticIP.prop("checked", false);
+            }
+            else if (formMode == 'new')
+            {
+                txtControlNo.val('');
+                txtCPU.val('');
+                txtRam_Description.val('');
+                txtRam_Size.val('');
+                txtStorage_Description.val('');
+                txtStorage_Size.val('');
+                txtIPAddress.val('');
+                txtLANMAC.val('');
+                txtWLANMAC.val('');
+                txtPCUser.val('');
+                txtHostname.val('');
+                txtAcquisitionCost.val('');
+                chkboxWithSpiceworks.prop("checked", false);
+                chkboxIsLaptop.prop("checked", false);
+                chkboxIfStaticIP.prop("checked", false);
+            }
+        }
+        //these validators check for values of textboxes to avoid empty textboxes
+        function logsValidator() {
+            if (txtDateITLogs.val() == '' || txtDateITLogs.val() == null || txtDescriptionITLogs.val() == '' || txtDescriptionITLogs.val() == null
+                || txtDoneByITLogs.val() == '' || txtDoneByITLogs.val() == null) {
+                return false;
+            }
+            return true;
+        }
+        function saveValidator() {
+            if (txtControlNo.val().trim() === '' || txtPCUser.val().trim() === '' || txtHostname.val().trim() === '' || txtCPU.val().trim() === '' ||
+                txtRam_Description.val().trim() === '' || txtRam_Size.val().trim() === '' || txtStorage_Description.val().trim() === '' || txtStorage_Size.val().trim() === '' || txtIPAddress.val().trim() === '' || txtLANMAC.val().trim() === ''||
+                txtWLANMAC.val().trim() === '') {
+                return false;
+            }
+            return true;
+        }
+        function validator() {
+            if (txtControlNo.val() == '' || txtControlNo.val() == null || txtPCUser.val() == '' || txtPCUser.val() == null ||
+                txtHostname.val() == '' || txtHostname.val() == null || dateLogs.val == '' || dateLogs.val == null) {
+                alert('You are missing some red fields')
+            }
+        }
+        //Fields are disabled at default, this function enables them
+        function EnableFields(bln) {
+            txtCPU.attr("readonly", bln == false);
+            txtRam_Description.attr("readonly", bln == false);
+            txtRam_Size.attr("readonly", bln == false);
+            txtStorage_Description.attr("readonly", bln == false);
+            txtStorage_Size.attr("readonly", bln == false);
+            chkboxIfStaticIP.attr("disabled", bln == false);
+            txtIPAddress.attr("readonly", bln == false);
+            txtLANMAC.attr("readonly", bln == false);
+            txtWLANMAC.attr("readonly", bln == false);
+            chkboxWithSpiceworks.attr("disabled", bln == false);
+            txtPCUser.attr("readonly", bln == false);
+            txtHostname.attr("readonly", bln == false);
+        }
+        function EnableFieldsLogs(bln) {
+            txtControlNoITLogs.attr("readonly", bln == false);
+            txtDateITLogs.attr("readonly", bln == false);
+            txtDescriptionITLogs.attr("readonly", bln == false);
+            txtRemarksITLogs.attr("readonly", bln == false);
+            txtDoneByITLogs.attr("readonly", bln == false);
+        }
+        function btnAddFunction() {
+            if (formMode == "new") {
+                EnableFields(true);
+                ClearFields();
+                btnAdd.addClass("d-none");
+                btnSave.removeClass("d-none");
+                btnCancel.removeClass("d-none");
+                btnDelete.addClass("d-none");
+                btnEdit.addClass("d-none");
+                btnClear.removeClass("d-none");
+                btnSelectIT.addClass("d-none");
+                btnLinkSoftware.addClass("d-none");
+                btnLogsDelete.addClass("d-none");
+                btnSelectITLogs.addClass("d-none");
+                btnPeripheralsDelete.addClass("d-none");
+                btnPeripheralsList.addClass("d-none");
+                btnBackToMasterlist.addClass("d-none");
+                btnControlNoMasterlist.addClass("d-none");
+                $('#mdl_ControlNoLookup #ModalBody').empty();
+                $('#mdl_ControlNoLookup #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+                var ITLogs = '@Html.Raw(@Url.Action("LoadControlNoLookup", "MISD", new { CNLookup = "tmpControlNoLookupLoadCode" }))';
+                $('#mdl_ControlNoLookup #ModalBody').load(ITLogs.replace('tmpControlNoLookupLoadCode', "1")
+                    , function (response, status, xhr) {
+                        if (xhr.status == 403) {
+                            var response = $.parseJSON(xhr.responseText);
+                            window.location = response.LogOnUrl;
+                        }
+                    });
+                $('#mdl_ControlNoLookup').modal('show');
+                var SoftwareTable = $('#tbl_SoftwareMasterlist').DataTable();
+                var PeripheralsList = $('#tbl_PeripheralsList').DataTable();
+                var ITLogsTable = $('#tbl_ITLogsMasterlist').DataTable();
+                SoftwareTable.clear().draw();
+                PeripheralsList.clear().draw();
+                ITLogsTable.clear().draw();
+                var searchInput = $('div.dataTables_filter input');
+                searchInput.toggle();
+            }
+            else if (mode == "add") {
+                EnableFields(true);
+                ClearFields();
+                btnAdd.addClass("d-none");
+                btnSave.removeClass("d-none");
+                btnCancel.removeClass("d-none");
+                btnDelete.addClass("d-none");
+                btnEdit.addClass("d-none");
+                btnClear.removeClass("d-none");
+                btnSelectIT.addClass("d-none");
+                btnLinkSoftware.addClass("d-none");
+                btnLogsDelete.addClass("d-none");
+                btnSelectITLogs.addClass("d-none");
+                btnPeripheralsDelete.addClass("d-none");
+                btnPeripheralsList.addClass("d-none");
+                btnBackToMasterlist.addClass("d-none");
+                btnControlNoMasterlist.addClass("d-none");
+                $('#mdl_ControlNoLookup #ModalBody').empty();
+                $('#mdl_ControlNoLookup #ModalBody').append("<div class='col-lg-4 col-md-4 col-sm-4 container justify-content-center' style='adding:15px;background-color:#fff;text-align:center;'><label> <i class='fa fa-spinner fa-spin'></i>   Loading page...</label>  </div >");
+                var ITLogs = '@Html.Raw(@Url.Action("LoadControlNoLookup", "MISD", new { CNLookup = "tmpControlNoLookupLoadCode" }))';
+                $('#mdl_ControlNoLookup #ModalBody').load(ITLogs.replace('tmpControlNoLookupLoadCode', "1")
+                    , function (response, status, xhr) {
+                        if (xhr.status == 403) {
+                            var response = $.parseJSON(xhr.responseText);
+                            window.location = response.LogOnUrl;
+                        }
+                    });
+                $('#mdl_ControlNoLookup').modal('show');
+                var searchInput = $('div.dataTables_filter input');
+                searchInput.toggle();
+            }
+        }
+    </script>
+</body>
+</html>
+
+

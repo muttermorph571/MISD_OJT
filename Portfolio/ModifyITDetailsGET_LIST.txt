@@ -1,0 +1,94 @@
+USE [PRS]
+GO
+/****** Object:  StoredProcedure [dbo].[spOPMAS_ModifyITDetailsGET_LIST]    Script Date: 08/04/2023 4:05:38 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spOPMAS_ModifyITDetailsGET_LIST]
+	@mode varchar (20),
+	@controlNo VARCHAR(20) = NULL,
+	@PCControlNo varchar (20) = NULL
+AS
+if (@mode = 'GetITList')
+BEGIN
+	set nocount on;
+	select l.LocDesc
+		, case when ITInv.IsLaptop = 1 then 'Laptop' when ITInv.IsLaptop = 0 then 'Desktop' else '' end 'Type'
+		--, e.DepartmentInitial 'Dept'
+		, ITInv.IsLaptop
+		, ITInv.Hostname
+		, ITInv.PCUser
+		, ITInv.CPU
+		, ITInv.RAM_Size
+		, ITInv.RAM_Description
+		, ITInv.Storage_Size
+		, ITInv.Storage_Description
+		, ITInv.ControlNo
+		, format(acc.DateAcquired, 'MM/dd/yyyy') 'DateAcquired'
+		, case when ITInv.IfStaticIP = 1 then 'Y' else 'N' end 'StaticIP'
+		, ITInv.IfStaticIP
+		, ITInv.IPAddress
+		, ITInv.LANMAC
+		, ITInv.WLANMAC
+		, case when ITInv.WithSpiceworks = 1 then 'Y' else 'N' end 'Spiceworks'
+		, ITInv.WithSpiceworks
+		, acc.AcquisitionCost
+	from mst_ITInventory AS ITInv
+		INNER JOIN acc_Mst_Accounted_Items AS acc on ITInv.ControlNo = acc.ControlNo
+		left join acc_Mst_Location l on acc.LocID = l.LocID
+		--left join GeneralLedgerNew.dbo.vwEmployees e on acc.AccountableParty = e.AISNo
+	order by l.LocDesc
+END
+else if (@mode = 'GetITLogsList')
+BEGIN
+	set nocount on;
+	select Ndx,format(Date,'MM/dd/yyyy')Date,ControlNo,DoneBy,Description,Remarks
+	from trx_ITInventory_HxLogs
+	where ControlNo = @controlNo
+	Order By Date desc
+END
+else if (@mode = 'GetPeripheralsListIT')
+BEGIN
+	set nocount on;
+	SELECT 
+	peripherals.PCControlNo,
+    peripherals.ControlNo,
+    acc.Description,
+    acc.Remarks,
+    loc.LocDesc 
+	FROM 
+    trx_ITInventory_Peripherals AS peripherals
+	INNER JOIN 
+    mst_ITInventory AS mst ON peripherals.PCControlNo = mst.ControlNo
+	INNER JOIN 
+    acc_Mst_Accounted_Items AS acc ON peripherals.ControlNo = acc.ControlNo
+	INNER JOIN 
+    acc_Mst_Location AS loc ON acc.LocId = loc.LocID
+	WHERE 
+    peripherals.PCControlNo = @ControlNo;	
+END
+else if (@mode = 'GetSoftwareListIT')
+BEGIN
+	set nocount on;
+	select si.*
+	from trx_ITInventory_Software tbl
+		inner join mst_SoftwareInventory si on tbl.SoftwareCode = si.Code
+	where tbl.PCControlNo = @controlNo
+	order by Description
+END
+else if (@mode = 'GetITDetails')
+BEGIN
+    set nocount on;
+	select 
+	ITInv.*, acc.AcquisitionCost
+	from mst_ITInventory AS ITInv
+	INNER JOIN
+	acc_Mst_Accounted_Items AS acc on ITInv.ControlNo = acc.ControlNo
+	where ITInv.ControlNo = @ControlNo
+END

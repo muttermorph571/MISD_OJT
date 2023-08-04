@@ -1,0 +1,74 @@
+USE [PRS]
+GO
+/****** Object:  StoredProcedure [dbo].[spOPMAS_ModifyITDetailsCLEAR_DELETE]    Script Date: 08/04/2023 4:05:19 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spOPMAS_ModifyITDetailsCLEAR_DELETE]
+	@mode varchar (20),
+	@controlNo VARCHAR(20),
+	@subCategoryID int = NULL,
+	@Ndx int = NULL
+AS
+--Main Add Function 
+if (@mode = 'ClearITPeripheralsList')
+BEGIN
+    set nocount on;
+	delete trx_ITInventory_Peripherals
+	where PCControlNo = @controlNo
+END
+else if (@mode = 'ClearITSoftwareList')
+BEGIN
+	set nocount on;
+	delete trx_ITInventory_Software
+	where PCControlNo = @controlNo
+END
+else if (@mode = 'DelITAll')
+BEGIN
+	SET NOCOUNT ON;
+
+	DELETE trx
+    FROM trx_ITInventory_HxLogs trx
+    JOIN mst_ITInventory it
+        ON trx.ControlNo = it.ControlNo
+    WHERE it.ControlNo = @ControlNo;
+
+    -- Delete child records from mst_SoftwareInventory
+    DELETE siIT
+    FROM trx_ITInventory_Software siIT
+    JOIN mst_ITInventory it
+        ON siIT.PCControlNo = it.ControlNo
+    WHERE it.ControlNo = @ControlNo;
+
+	 DELETE pIT
+    FROM trx_ITInventory_Peripherals pIT
+    JOIN mst_ITInventory it
+        ON pIT.PCControlNo = it.ControlNo
+    WHERE it.ControlNo = @ControlNo;
+
+    -- Delete parent record from mst_ITInventory
+    DELETE FROM mst_ITInventory WHERE ControlNo = @ControlNo;
+END
+else if (@mode = 'DelITLogsList')
+BEGIN
+	SET NOCOUNT ON;
+    DELETE FROM trx_ITInventory_HxLogs WHERE Ndx = @Ndx;
+END
+else if (@mode = 'DelLogsCheckbox')
+BEGIN
+	set nocount on;
+	delete trx_ITInventory_HxLogs 
+	where ControlNo = @controlNo and Ndx = @Ndx
+END
+else if (@mode = 'DelPeripheralsCheckbox')
+BEGIN
+	set nocount on;
+	delete trx_ITInventory_Peripherals
+	where ControlNo = @ControlNo
+END

@@ -1,0 +1,83 @@
+﻿@model Intranet.Models.Software_IT_Inventory.MainForm
+@using (Html.BeginForm("ModifyITDetails", "MISD", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken();
+    @Html.HiddenFor(m => m.ITDetails.ControlNo);
+    <div id="ModalBody">
+        <div class="col-md-12 form-group">
+            <label for="tbl_AddPeripheralsList" class="text-dark mb-0 font-weight-bold col-md-4">Peripherals</label>
+            <table class="table table-striped table-bordered w-100" id="tbl_AddPeripheralsList">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Control No.</th>
+                        <th>Description</th>
+                        <th>Remarks</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.PeripheralsList.Count; i++)
+                    {
+                        <tr>
+                            <td class="text-nowrap">@Html.CheckBoxFor(m => m.PeripheralsList[i].checkbox)@Html.HiddenFor(m => m.PeripheralsList[i].checkbox)</td>
+                            <td>@Html.DisplayFor(m => m.PeripheralsList[i].ControlNo)@Html.HiddenFor(m => m.PeripheralsList[i].ControlNo)</td>
+                            <td>@Html.DisplayFor(m => m.PeripheralsList[i].Description)@Html.HiddenFor(m => m.PeripheralsList[i].Description)</td>
+                            <td>@Html.DisplayFor(m => m.PeripheralsList[i].Remarks)@Html.HiddenFor(m => m.PeripheralsList[i].Remarks)</td>
+                            <td>@Html.DisplayFor(m => m.PeripheralsList[i].Location)@Html.HiddenFor(m => m.PeripheralsList[i].Location)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="submit" name="LinkBtnName" value="LinkPeripherals" class="btn btn-primary" id="btn_AddPeripheralsList">Add Periphreral(s)</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+}
+<script>
+    $(document).ready(function () {
+        var cmbSubCategory = $('#cmb_SubCategory');
+        var PeripheralsList = $('#tbl_AddPeripheralsList').DataTable({
+            order: [],
+            paging: false,
+            scrollY: "327px",
+            scrollX: true,
+            scrollCollapse: true,
+            bInfo: false,
+            select: 'single',
+            dom: '<"float-left"f><"AddPeripheralsToolbar">rt<"bottom"lp>',
+            search: {
+                "addClass": 'form-control input-lg col-xs-12'
+            },
+            language: {
+                "search": "_INPUT_",
+                "searchPlaceholder": "Search Peripherals"
+            },
+        });
+        $('#tbl_AddPeripheralsList tbody').on('click', 'input[type="checkbox"]', function () {
+            if ($(this).prop('checked')) {
+                $(this).attr('value', true);
+            }
+            else {
+                $(this).attr('value', false);
+            }
+        });
+    });
+
+    var btnAddPeripheralsList = $('#btn_AddPeripheralsList');
+    var model = $('#PeripheralsList');
+    btnAddPeripheralsList.click(function () {
+        var PeripheralsTable = $('#tbl_AddPeripheralsList').DataTable();
+        var isChecked = $('#tbl_AddPeripheralsList tbody input[type="checkbox"]:checked').length > 0;
+        if (!isChecked) {
+            alert("Please select from the masterlist.");
+            return false;
+        }
+        else {
+            var bln = confirm("Are you sure you want to Add Peripheral(s)?");
+            return bln;
+        }
+    });
+</script>

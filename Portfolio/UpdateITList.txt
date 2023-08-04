@@ -1,0 +1,39 @@
+USE [PRS]
+GO
+/****** Object:  StoredProcedure [dbo].[spOPMAS_UpdateITList]    Script Date: 08/04/2023 4:05:53 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spOPMAS_UpdateITList]
+	@ControlNo Varchar(20),
+	@IsLaptop bit, 
+	@PCUser varchar(50),
+	@Hostname varchar(50),
+	@CPU varchar(50),
+	@Ram_Description varchar(50),
+	@Ram_Size int,
+	@Storage_Description varchar(50),
+	@Storage_Size int,
+	@IfStaticIP bit,
+	@IPAddress varchar(15),
+	@LANMAC varchar(17),
+	@WLANMAC varchar(17),
+	@WithSpiceworks bit
+
+AS
+BEGIN
+    SET NOCOUNT ON;
+	UPDATE mst_ITInventory
+	SET ControlNo = @ControlNo, IsLaptop = @IsLaptop, PCUser = @PCUser, Hostname = @Hostname, CPU = @CPU,
+	RAM_Description = @Ram_Description, RAM_Size = @Ram_Size, Storage_Description = @Storage_Description,
+	Storage_Size = @Storage_Size, IfStaticIP = @IfStaticIP, IPAddress = @IPAddress, LANMAC = @LANMAC,
+	WLANMAC = @WLANMAC, WithSpiceworks = @WithSpiceworks ,AuditDate = GETDATE(), AuditUser = SYSTEM_USER
+	WHERE ControlNo = @ControlNo;
+END
+

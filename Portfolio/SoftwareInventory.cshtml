@@ -1,0 +1,276 @@
+﻿@model Intranet.Models.Software_IT_Inventory.MainForm
+@{
+    ViewBag.Title = "Software Inventory";
+}
+@if (TempData["Message"] != null)
+{
+    <script type="text/javascript">
+        alert('@TempData["Message"]');
+    </script>
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <style>
+    </style>
+</head>
+<body>
+    <div>
+        <h4 class="modal-header justify-content-center p-0 pb-1 mb-1 m-0 text-state-orange-stroke">Software Inventory</h4>
+    </div>
+    @using (Html.BeginForm("ModifyDetails", "MISD", FormMethod.Post, new { enctype = "multipart/form-data", @class = "was-validated", novalidate = "novalidate" }))
+    {
+        @Html.AntiForgeryToken();
+        //Fields
+        <div class="form-row col-auto border-0 border-primary ">
+            <div class="form-group p-3">
+                <label>Code</label>
+                @Html.TextBoxFor(m => m.SoftwareDetails.Code, new { @class = "form-control form-control-sm", style = "text-align: center", id = "txt_Code", @placeholder = "Code.", @readonly = "readonly" })
+            </div>
+            <div class="form-group p-3">
+                <label>Control No.</label>
+                @Html.TextBoxFor(m => m.SoftwareDetails.ControlNo, new { @class = "form-control form-control-sm", style = "text-align: center", id = "controlNo", @placeholder = "Control No.", @readonly = "readonly" })
+            </div>
+            <div class="form-group p-3">
+                <label>Description</label>
+                @Html.TextBoxFor(m => m.SoftwareDetails.Description, new { @class = "form-control form-control-sm", style = "text-align: center", id = "description", @placeholder = "Description", @readonly = "readonly" })
+            </div>
+            <div class="form-group p-3">
+                <label>Product Key</label>
+                @Html.TextBoxFor(m => m.SoftwareDetails.ProductKey, new { @class = "form-control form-control-sm", style = "text-align: center", id = "productKey", @placeholder = "Product Key", @readonly = "readonly" })
+            </div>
+            <div class="form-group p-3">
+                <label>Remarks</label>
+                @Html.TextAreaFor(m => m.SoftwareDetails.Remarks, new { @class = "form-control form-control-sm", @cols = "50", @rows = "2", @style = "text - align: center;", id = "remarks", @placeholder = "Remarks", @readonly = "readonly" })
+            </div>
+        </div>
+        //Buttons
+        <div class="col-12 p-1 w-100">
+            <div id="btn_Bar" class="form-group form-inline col-sm-auto justify-content-between">
+                <button type="button" class="btn btn-primary mr" id="btn_SelectProfile">Select</button>
+                <div>
+                    <button id="btn_Add" type="button" class="btn btn-group btn-success mr-2">Add</button>
+                    <button id="btn_Edit" type="button" class="btn btn-group btn-warning mr-2">Edit</button>
+                    <button id="btn_Save" type="submit" name="BtnName" value="Save" class="btn btn-group btn-success mr-2 d-none">Save</button>
+                    <button id="btn_Update" type="submit" name="BtnName" value="Update" class="btn btn-group btn-primary mr-2 d-none">Update</button>
+                    <button id="btn_Delete" type="submit" name="BtnName" value="Delete" class="btn btn-group btn-danger mr-2 d">Delete</button>
+                    <button id="btn_Cancel" type="button" class="btn btn-group btn-danger mr-2 d-none">Cancel</button>
+                    <button id="btn_Clear" type="button" class="btn btn-default mr-2 btn-info">Clear</button>
+                </div>
+            </div>
+            @* Modal outside main page *@
+            <table class="table table-striped table-bordered w-100" id="tbl_SoftwareMasterlist">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Control No.</th>
+                        <th>Description</th>
+                        <th>Product Key</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.SoftwareList.Count; i++)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(m => m.SoftwareList[i].Code)</td>
+                            <td>@Html.DisplayFor(m => m.SoftwareList[i].ControlNo)</td>
+                            <td>@Html.DisplayFor(m => m.SoftwareList[i].Description)</td>
+                            <td>@Html.DisplayFor(m => m.SoftwareList[i].ProductKey)</td>
+                            <td>@Html.DisplayFor(m => m.SoftwareList[i].Remarks)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    <script>
+        //Declaration of variables
+        var txtCode = $('#txt_Code');
+        var txtControlNo = $('#controlNo');
+        var txtDescription = $('#description');
+        var txtProductKey = $('#productKey');
+        var txtRemarks = $('#remarks');
+        var btnAdd = $('#btn_Add');
+        var btnEdit = $('#btn_Edit');
+        var btnCancel = $('#btn_Cancel');
+        var btnSave = $('#btn_Save');
+        var btnSearch = $('#btn_Search');
+        var btnDelete = $('#btn_Delete');
+        var btnClear = $('#btn_Clear');
+        var btnUpdate = $('#btn_Update');
+        var btnViewMasterlist = $('#btn_ViewMasterlist');
+        var btnSelectProfile = $('#btn_SelectProfile');
+        var btnConfirmation = $('#btn_Confirmation');
+        var btnBar = $('#btn_Bar');
+        btnClear.addClass("d-none");
+        //Initialization
+        $(document).ready(function () {
+            var table = $('#tbl_SoftwareMasterlist').DataTable({
+                order: [],
+                paging: false,
+                scrollY: "300px",
+                scrollX: true,
+                scrollCollapse: true,
+                bInfo: false,
+                select: 'single',
+                dom: '<"float-left"f><"toolbar">rt<"bottom"lp>',
+                search: {
+                    "addClass": 'form-control input-lg col-xs-12'
+                },
+                language: {
+                    "search": "_INPUT_",
+                    "searchPlaceholder": "Search"
+                },
+            });
+            $('div.toolbar').append(btnBar);
+        });
+        //Button Functions
+        //Search error catcher
+        btnSearch.click(function () {
+            if (txtCode.val() == '' || txtCode.val() == null) {
+                alert("Please input a code to search.")
+                return false;
+            }
+            else {
+                var url = '@Html.Raw(Url.Action("LoadSoftwareInventory", "MISD", new { prmCode = "tmpCode" }))';
+            location.href = url.replace('tmpCode', txtCode.val());
+            }
+        });
+        //Empty delete catcher
+        btnDelete.click(function () {
+            if (txtCode.val() == '' || txtCode.val() == null) {
+                alert("Select one from the masterlist to delete.")
+                btnViewMasterlist.focus();
+                return false;
+            }
+            else {
+                    var bln = confirm("Are you sure you want to Delete?");
+                if (bln == false) {
+                    return bln;
+                }
+            }
+        });
+        //Missing field Save catcher
+        btnSave.click(function () {
+            if (txtControlNo.val() == '' || txtCode.val() == null || txtDescription.val() == '' || txtDescription.val() == null || txtProductKey.val() == '' || txtProductKey.val() == null || txtRemarks.val() == '' || txtRemarks.val() == null) {
+                alert("There is a missing field.")
+                return false;
+            }
+            else {
+                var bln = confirm("Are you sure you want to Save?");
+                if (bln == false) {
+                    return bln;
+                }
+            }
+        });
+        //Missing field Update catcher
+        btnUpdate.click(function () {
+            if (txtControlNo.val() == '' || txtCode.val() == null || txtDescription.val() == '' || txtDescription.val() == null ||
+                txtProductKey.val() == '' || txtProductKey.val() == null || txtRemarks.val() == '' || txtRemarks.val() == null) {
+                alert("There is a missing field.")
+                return false;
+            }
+            else {
+                var bln = confirm("Are you sure you want to Update?");
+                if (bln == false) {
+                    return bln;
+                }
+            }
+        });
+        btnSelectProfile.click(function () {
+            transferDataToFields();
+        });
+        btnAdd.click(function () {
+            ClearFields();
+            btnAdd.addClass("d-none");
+            btnSave.removeClass("d-none");
+            btnCancel.removeClass("d-none");
+            btnDelete.addClass("d-none");
+            btnEdit.addClass("d-none");
+            btnSearch.addClass("d-none");
+            btnViewMasterlist.addClass("d-none")
+            btnConfirmation.removeClass("d-none");
+            btnClear.removeClass("d-none");
+            EnableFields(true);
+            txtCode.EnableFields(false);
+        });
+        btnCancel.click(function () {
+            btnCancel.addClass("d-none");
+            btnSave.addClass("d-none");
+            btnDelete.removeClass("d-none");
+            btnAdd.removeClass("d-none");
+            btnEdit.removeClass("d-none");
+            btnUpdate.addClass("d-none");
+            btnSearch.removeClass("d-none");
+            btnViewMasterlist.removeClass("d-none")
+            btnClear.addClass("d-none");
+            btnSelectProfile.attr("style", "visibility:visible;");
+            var url = '@Html.Raw(Url.Action("LoadSoftwareInventory", "MISD", new { prmCode = "tmpCode"}))';
+            location.href = url.replace('tmpCode', txtCode.val());
+            EnableFields(false);
+            txtCode.EnableFields(false);
+            ClearFields();
+        });
+        btnEdit.click(function () {
+            if (txtCode.val() == '' || txtCode.val() == null) {
+                alert("Select one from the masterlist.")
+            }
+            else {
+                transferDataToFields();
+                btnAdd.addClass("d-none");
+                btnEdit.addClass("d-none");
+                btnDelete.addClass("d-none");
+                btnUpdate.removeClass("d-none");
+                btnCancel.removeClass("d-none");
+                btnSearch.addClass("d-none");
+                btnViewMasterlist.addClass("d-none");
+                btnClear.removeClass("d-none");
+                btnSelectProfile.attr("style","visibility:hidden;");
+                EnableFields(true);
+            }
+        });
+        btnSelectProfile.click(function () {
+            var table = $('#tbl_SoftwareMasterlist').DataTable();
+            if (table.rows('.selected').data().length == 0) {
+              alert("Please select one from the Master list");
+              return;
+            }
+            var selectFromMasterlist = table.row('.selected').data();
+            var url = '@Html.Raw(Url.Action("LoadSoftwareInventory", "MISD", new { prmCode = "tmpCode" }))';
+            location.href = url.replace('tmpCode', selectFromMasterlist[0]);
+        });
+        btnClear.click(function () {
+            ClearFields();
+        });
+        function ClearFields() {
+            $('#txt_Code').val('');
+            $('#controlNo').val('');
+            $('#description').val('');
+            $('#productKey').val('');
+            $('#remarks').val('');
+        }
+        function EnableFields(bln) {
+            //$("#tbl_SoftwareMasterlist").find("input,button,textarea,select").attr("disabled", bln == true);
+            txtControlNo.attr("readonly", bln == false);
+            txtRemarks.attr("readonly", bln == false);
+            txtDescription.attr("readonly", bln == false);
+            txtProductKey.attr("readonly", bln == false);
+        }
+        function transferDataToFields() {
+            //to acquire data just by selecting from master list and clicking edit button right away
+            let table = $('#tbl_SoftwareMasterlist').DataTable();
+            if (table.rows('.selected').data().length == 0) {
+                return;
+            }
+            var d = table.row('.selected').data();
+            txtCode.val(d[0]);
+            txtControlNo.val(d[1]);
+            txtDescription.val(d[2]);
+            txtProductKey.val(d[3]);
+            txtRemarks.val(d[4]);
+        }
+    </script>
+</body>
+</html>

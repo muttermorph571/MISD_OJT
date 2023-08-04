@@ -1,0 +1,94 @@
+USE [PRS]
+GO
+/****** Object:  StoredProcedure [dbo].[spOPMAS_ModifyITDetailsADD_LINK]    Script Date: 08/04/2023 4:04:57 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spOPMAS_ModifyITDetailsADD_LINK]
+	@mode varchar(20),
+	@ControlNo varchar(20) = NULL,
+	@PCUser varchar(50) = NULL,
+	@Hostname varchar(50) = NULL,
+    @IsLaptop bit = NULL ,
+    @CPU VARCHAR(50) = NULL,
+    @RAM_Description VARCHAR(50) = NULL,
+	@RAM_Size int = NULL,
+	@Storage_Description varchar(50) = NULL,
+	@Storage_Size int = NULL,
+	@IfStaticIP bit = NULL,
+	@IPAddress VARCHAR(15) = NULL,
+	@LANMAC VARCHAR(17) = NULL,
+	@WLANMAC VARCHAR(17) = NULL,
+	@WithSpiceworks bit = NULL,
+	--For Logs List
+	@Date datetime = NULL,
+	@DoneBy varchar(250) = NULL,
+    @Description varchar(250) = NULL,
+    @Remarks VARCHAR(250) = NULL,
+	--For SoftwareInventory List
+    @ProductKey varchar(50) = NULL,
+	--For peripherals
+	@PCControlNo VARCHAR(20) = NULL,
+	--For softwarelist
+	@code varchar(20) = NULL
+
+AS
+--Main Add Function 
+if (@mode = 'AddControlNoToITList')
+BEGIN
+    SET NOCOUNT ON
+    INSERT INTO mst_ITInventory (ControlNo, AuditUser, AuditDate)
+    VALUES (@ControlNo, SYSTEM_USER, GETDATE());
+    SELECT @ControlNo AS ControlNo; 
+END
+else if (@mode = 'AddITList')
+BEGIN
+	SET NOCOUNT ON
+    --DECLARE @ControlNo varchar(20);
+    INSERT INTO mst_ITInventory (PCUser,Hostname, ControlNo, IsLaptop, CPU, 
+	RAM_Description, RAM_Size, Storage_Description, Storage_Size, IfStaticIP, 
+	IPAddress, LANMAC, WLANMAC, WithSpiceworks,   AuditUser, AuditDate)
+    VALUES (@PCUser,@Hostname,@ControlNo,@IsLaptop, @CPU, @RAM_Description, @RAM_Size,
+	@Storage_Description, @Storage_Size, @IfStaticIP, @IPAddress, @LANMAC, @WLANMAC, @WithSpiceworks, SYSTEM_USER, GETDATE());
+    SELECT @ControlNo AS ControlNo; 
+END
+else if (@mode = 'AddITLogsList')
+BEGIN
+	SET NOCOUNT ON
+    DECLARE @Ndx int;
+    SELECT @Ndx = ISNULL(MAX(Ndx), 1) + 1 FROM trx_ITInventory_HxLogs; -- Increment the code
+    INSERT INTO trx_ITInventory_HxLogs(Ndx,ControlNo,Date,DoneBy, Description, Remarks, AuditUser, AuditDate)
+    VALUES (@Ndx,@ControlNo,@Date, @DoneBy, @Description, @Remarks ,SYSTEM_USER, GETDATE());
+    SELECT @Ndx AS Ndx; 
+END
+else if (@mode = 'AddSoftwareList')
+BEGIN
+	set nocount on;
+	select
+	case
+		when inv.PCControlNo is null then 0
+		else 1
+	end 'IsChecked'
+	, tbl.*
+	from mst_SoftwareInventory tbl
+		left join trx_ITInventory_Software inv on tbl.Code = inv.SoftwareCode
+			and inv.PCControlNo = @controlNo
+	order By IsChecked desc, Description
+END
+else if (@mode = 'LinkPeripheralsList')
+BEGIN
+	set nocount on;
+	insert trx_ITInventory_Peripherals(PCControlNo, ControlNo, AuditUser, AuditDate)
+	select @PCControlNo, @ControlNo, SYSTEM_USER, GETDATE()
+END
+else if (@mode = 'LinkSoftwareList')
+BEGIN
+	insert trx_ITInventory_Software (PCControlNo, SoftwareCode, AuditUser, AuditDate)
+	select @pcControlNo, @code, SYSTEM_USER, GETDATE()
+END
