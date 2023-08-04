@@ -1,0 +1,61 @@
+USE [PRS]
+GO
+/****** Object:  StoredProcedure [dbo].[spOPMAS_SoftwareInventory]    Script Date: 08/04/2023 4:15:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+ALTER PROCEDURE [dbo].[spOPMAS_SoftwareInventory]
+	@mode varchar(20),
+	@Code int = NULL,
+    @ControlNo Varchar(20) = NULL,
+	@Description varchar(100) = NULL,
+    @ProductKey varchar(50) = NULL,
+    @Remarks VARCHAR(250) = NULL
+AS
+if (@mode = 'AddSoftwareInventoryList')
+BEGIN
+    SET NOCOUNT ON
+	SELECT @Code = ISNULL(MAX(Code), 1) + 1 FROM mst_SoftwareInventory;
+    INSERT INTO mst_SoftwareInventory (Code,ControlNo,Description,ProductKey,AuditUser, AuditDate)
+    VALUES (@Code,@ControlNo,@Description,@ProductKey, SYSTEM_USER, GETDATE());
+    SELECT @Code AS Code; 
+END
+else if (@mode = 'DelSoftwareList')
+BEGIN
+    SET NOCOUNT ON;
+	ALTER TABLE trx_ITInventory_Software
+	DROP CONSTRAINT FK_trx_ITInventory_Software_mst_SoftwareInventory;
+
+	ALTER TABLE trx_ITInventory_Software
+	ADD CONSTRAINT FK_trx_ITInventory_Software_mst_SoftwareInventory
+	FOREIGN KEY (SoftwareCode)
+	REFERENCES mst_SoftwareInventory (Code)
+	ON DELETE CASCADE;
+	DELETE FROM mst_SoftwareInventory WHERE Code = @code;
+END
+else if(@mode = 'GetSoftwareDetails')
+BEGIN
+	set nocount on;
+	select *
+	from mst_SoftwareInventory
+	where Code = @code
+END
+else if (@mode = 'GetSoftwareList')
+BEGIN
+	select *
+	from mst_SoftwareInventory
+END
+else if (@mode = 'UpdateSoftwareList')
+BEGIN
+SET NOCOUNT ON;
+	UPDATE mst_SoftwareInventory
+	SET code = @code, ControlNo = @ControlNo, Description = @Description, ProductKey = @ProductKey, Remarks = @Remarks, 
+	AuditDate = GETDATE(), AuditUser = SYSTEM_USER
+	WHERE code = @code;
+END
